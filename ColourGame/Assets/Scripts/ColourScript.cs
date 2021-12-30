@@ -1,0 +1,26 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class ColourScript : MonoBehaviour
+{
+    //An object created to hold the colour varialbe and the name
+    //this is done so the displayed text and text color wont be the same
+    private string name_String;
+    private Color colour_;
+
+    public string word { get => name_String; set => name_String = value; }
+    public Color colour { get => colour_; set => colour_ = value; }
+
+    public ColourScript(string name, Color colour)
+    {
+        this.name_String = name;
+        this.colour_ = colour;
+    }
+    //no-arg constructor
+    public ColourScript()
+    {
+        this.name_String = "none";
+        this.colour_ = Color.black;
+    }
+}
