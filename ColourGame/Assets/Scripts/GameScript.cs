@@ -31,12 +31,16 @@ public class GameScript : MonoBehaviour
     //previous word/colour combo to prevent repeats (one in sixteen chance)
     ColourScript csLast;
     ColourScript csNext;
-    //
+    //A counter to track answers given
     int numAnswersGiven = 0;
+    //number of questions asked, question being word/colour combos shown.
     public int numOfQuestions = 10;
+    bool gameIsRunning = false;
 
-    // Start is called before the first frame update
-    void Start()
+    public NavigationScript navigationScript;
+
+    // Awake is called when the script is initialized
+    private void Awake()
     {
         //AddButton Listeners
         redButton.onClick.AddListener(redButtonClick);
@@ -60,17 +64,27 @@ public class GameScript : MonoBehaviour
             csGreen, 
             csPink,
         };
+    }
 
-        timer = 0; //reset timer
-
+    // Start is called before the first frame update
+    void OnEnable()
+    {
+        //Reset game
+        timer = 0;
+        numAnswersGiven = 0;
+        gameIsRunning = true;
+        //Gets first word
         getNextColourWord();
     }
 
     // Update is called once per frame
     void Update()
     {
-        timer += Time.deltaTime;
-        timerText.text = timer.ToString("F2");
+        if (gameIsRunning)
+        {
+            timer += Time.deltaTime;
+            timerText.text = timer.ToString("F2");
+        }
 
         //Added hotkeys for quick play
         if (Input.GetKeyDown(KeyCode.Q))
@@ -161,16 +175,39 @@ public class GameScript : MonoBehaviour
     }
 
 
-
     private void CheckPlayerAnswer(Color color)
-    {
+    {            
+        //if player answers correctly add to answers given count, check if all questions are answered yet. IF not gets next word.
         if (color == csNext.colour)
         {
-            getNextColourWord();
+            numAnswersGiven++;
+            if (!HasPlayerWon(numAnswersGiven))
+                getNextColourWord();
         }
-        else if (numAnswersGiven == numOfQuestions)
+        //IF answer is incorrect game ends.
+        else
         {
-            //end
+            EndGame(false);
         }
+    }
+
+    private bool HasPlayerWon(int answers)
+    {
+        //if player has answered all correctly
+        if (answers == numOfQuestions)
+        {
+            EndGame(true);
+            return true;
+        }
+        else
+            return false;
+    }
+    //calls our navigation script to take us to end game screen.
+    private void EndGame(bool didPlayerWin)
+    {
+        //pause timer on game end
+        gameIsRunning = false;
+        //go to result screen with results
+        navigationScript.ShowResultScreen(didPlayerWin, timer);
     }
 }

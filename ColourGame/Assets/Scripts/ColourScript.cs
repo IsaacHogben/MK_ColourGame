@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ColourScript : MonoBehaviour
 {
-    //An object created to hold the colour varialbe and the name
+    //A class created to hold the colour varialbe and the name
     //this is done so the displayed text and text color wont be the same
     private string name_String;
     private Color colour_;
