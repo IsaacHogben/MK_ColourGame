@@ -10,13 +10,17 @@ public class GameScript : MonoBehaviour
     //Using the public drag-n-drop method of referencing rather than GameObject.Find()
     public Text timerText;
     public Text colourText;
+    public Button redButton;
+    public Button blueButton;
+    public Button greenButton;
+    public Button pinkButton;
     //The float used to track time
     private float timer;
     //Colours
-    public Color colourRed = new Color(255f,255f,255f);
-    private Color colourBlue = new Color(0, 0, 255f);
-    private Color colourGreen = new Color(0, 255f, 0);
-    private Color colourPink = new Color(255f, 51f, 255f);
+    private Color colourRed = Color.red;
+    private Color colourBlue = Color.blue;
+    private Color colourGreen = Color.green;
+    private Color colourPink = new Color(255, 0, 51);
     //Color objects
     ColourScript csRed;
     ColourScript csBlue;
@@ -27,10 +31,18 @@ public class GameScript : MonoBehaviour
     //previous word/colour combo to prevent repeats (one in sixteen chance)
     ColourScript csLast;
     ColourScript csNext;
+    //
+    int numAnswersGiven = 0;
+    public int numOfQuestions = 10;
 
     // Start is called before the first frame update
     void Start()
     {
+        //AddButton Listeners
+        redButton.onClick.AddListener(redButtonClick);
+        blueButton.onClick.AddListener(blueButtonClick);
+        greenButton.onClick.AddListener(greenButtonClick);
+        pinkButton.onClick.AddListener(pinkButtonClick);
         //initialize colour objects
         csRed = new ColourScript("Red", colourRed);
         csBlue = new ColourScript("Blue", colourBlue);
@@ -38,8 +50,8 @@ public class GameScript : MonoBehaviour
         csPink = new ColourScript("Pink", colourPink);
         //we can also use the colourscript class to store the next combination to be shown.
         //they are initialized here
-        csNext = new ColourScript();
-        csLast = new ColourScript();
+        csNext = new ColourScript("null", Color.black);
+        csLast = new ColourScript("Last", Color.black);
         //Put our colours into a list to randomly select from
         colourList = new List<ColourScript>
         {
@@ -59,17 +71,37 @@ public class GameScript : MonoBehaviour
     {
         timer += Time.deltaTime;
         timerText.text = timer.ToString("F2");
+
+        //Added hotkeys for quick play
+        if (Input.GetKeyDown(KeyCode.Q))
+            redButtonClick();
+        if (Input.GetKeyDown(KeyCode.W))
+            blueButtonClick();
+        if (Input.GetKeyDown(KeyCode.E))
+            greenButtonClick();
+        if (Input.GetKeyDown(KeyCode.R))
+            pinkButtonClick();
     }
 
     public void getNextColourWord()
     {
-        string nextWord;
-        Color nextColour;
-        nextWord = getNextWord();
-        nextColour = getNextColour(nextWord);
-        //assign our next colour object its variables
-        csNext.word = nextWord;
-        csNext.colour = nextColour;
+        string nextWord = "";
+        Color nextColour = Color.black;
+
+        //Sets values of last word used to compare with new one
+        csLast.word = csNext.word;
+        csLast.colour = csNext.colour;
+
+        //will look for a new combination if their is a repeat
+        while (csNext.IsEqualTo(csLast))
+        {
+            nextWord = getNextWord();
+            nextColour = getNextColour(nextWord);
+            //assign our next colour object its variables
+            csNext.word = nextWord;
+            csNext.colour = nextColour;
+        }
+
         //set the text to equal our new combination
         SetColourText();
     }
@@ -106,5 +138,39 @@ public class GameScript : MonoBehaviour
         //get the colour from that list item
         Color selectedColour = colourList[index].colour;
         return selectedColour;
+    }
+
+    private void pinkButtonClick()
+    {
+        CheckPlayerAnswer(colourPink);
+    }
+
+    private void greenButtonClick()
+    {
+        CheckPlayerAnswer(colourGreen);
+    }
+
+    private void blueButtonClick()
+    {
+        CheckPlayerAnswer(colourBlue);
+    }
+
+    private void redButtonClick()
+    {
+        CheckPlayerAnswer(colourRed);
+    }
+
+
+
+    private void CheckPlayerAnswer(Color color)
+    {
+        if (color == csNext.colour)
+        {
+            getNextColourWord();
+        }
+        else if (numAnswersGiven == numOfQuestions)
+        {
+            //end
+        }
     }
 }

@@ -23,4 +23,13 @@ public class ColourScript : MonoBehaviour
         this.name_String = "none";
         this.colour_ = Color.black;
     }
+
+    //a comparator to asses if two combinations are the same
+    public bool IsEqualTo(ColourScript other)
+    {
+        if ((this.name_String == other.word) && (this.colour == other.colour))
+            return true;       
+        else
+            return false;
+    }
 }
