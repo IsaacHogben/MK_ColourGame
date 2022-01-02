@@ -32,6 +32,9 @@ public class MenuScript : MonoBehaviour
     private void OnEnable()
     {
         string score = highScoreScript.highScore.ToString("F2");
-        highScore.text = "High Score: " + score + " seconds";
+        //display x if no score has been recorded yet
+        if (score == "0.00")
+            score = "x";
+        highScore.text = "High Score: " + score + " Seconds";
     }
 }
