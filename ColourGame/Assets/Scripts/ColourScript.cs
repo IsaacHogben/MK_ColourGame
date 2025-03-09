@@ -27,9 +27,6 @@ public class ColourScript : MonoBehaviour
     //a comparator to asses if two combinations are the same
     public bool IsEqualTo(ColourScript other)
     {
-        if ((this.name_String == other.word) && (this.colour == other.colour))
-            return true;       
-        else
-            return false;
+        return ((this.name_String == other.word) && (this.colour == other.colour));
     }
 }
